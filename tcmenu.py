@@ -54,7 +54,9 @@ def interface_menu ():
 	global iface_count
 	iface_count = 1
 
+	print bcolors.HEADER
         print 5 * "-" , "Nectar Traffic Control Interface Choice " , 5 * "-"
+	print bcolors.ENDC
 
 	for i in ifs:
 		int_array.append (i[0])
@@ -86,7 +88,9 @@ def pick_interface ():
 def precheck ():
 	# check if the user is root or sudo
 	if os.getuid() != 0:
+		print bcolors.FAIL
 		print "***Error, must be root to execute\n"
+		print bcolors.ENDC
 		exit ()
 	else:
 		return ()
