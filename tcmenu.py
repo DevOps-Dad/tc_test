@@ -52,7 +52,7 @@ def top_menu ():
 			print "Menu 1 has been selected"
 		elif choice==2:
 			print "Menu 2 has been selected"
-		elif choice==3:
+		elif choice==3:  # Display current impediments
 			try:
 				retcode = subprocess.call("tc qdisc show dev " + iface, shell=True)
 				if retcode < 0:
@@ -63,7 +63,7 @@ def top_menu ():
 					print bcolors.ENDC
 			except OSError as e:
 				print >> sys.stderr, "Execution failed:", e
-		elif choice==4:
+		elif choice==4:  # Clear all impediments
 			try:
 				retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
 				if retcode < 0:
