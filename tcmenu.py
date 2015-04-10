@@ -3,6 +3,19 @@
 import os
 import sys
 import time
+import subprocess
+
+iface = 'eth0'
+
+class bcolors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
 
 def precheck ():
 	# check if the user is root or sudo
@@ -40,11 +53,27 @@ def top_menu ():
 		elif choice==2:
 			print "Menu 2 has been selected"
 		elif choice==3:
-			print "Menu 3 has been selected"
+			try:
+				retcode = subprocess.call("tc qdisc show dev " + iface, shell=True)
+				if retcode < 0:
+					print >> sys.stderr, "Child was terminated by signal", -retcode
+				else:
+					print bcolors.OKGREEN
+					print >> sys.stderr,"Child returned", retcode
+					print bcolors.ENDC
+			except OSError as e:
+				print >> sys.stderr, "Execution failed:", e
 		elif choice==4:
-			print "Menu 4 has been selected"
+			try:
+				retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
+				if retcode < 0:
+					print >> sys.stderr, "Child was terminated by signal", -retcode
+				else:
+					print >> sys.stderr, "Child returned", retcode
+			except OSError as e:
+				print >> sys.stderr, "Execution failed:", e
 		elif choice==5:
-			print "Menu 5 has been selected"
+			print "Thank you for using the Nectar Traffic Control setup utility...Have a fantastic day!!"
 			loop=False # This will make the while loop to end as not value of loop is set to False
 		else:
 			# Any integer inputs other than values 1-5 we print an error message
