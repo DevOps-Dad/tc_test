@@ -80,6 +80,11 @@ def top_menu ():
 			raw_input("Wrong option selection. Entry must be [1-5] Enter any key to try again..")
 
 def main ():
+	if len(sys.argv) != 2:
+		print "Usage tcmenu <interface>\n"
+		exit ()
+	else:
+		iface = str(sys.argv[1])
 	precheck ()
 	top_menu ()
 
