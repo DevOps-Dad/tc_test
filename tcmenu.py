@@ -64,6 +64,7 @@ def interface_menu ():
         print 60 * "-"
 
 def pick_interface ():
+	# Linux interface selector
         loop=True
 	global iface
 
