@@ -4,8 +4,13 @@ import os
 import sys
 import time
 import subprocess
+import socket
+import fcntl
+import struct
+import array
 
-iface = 'eth0'
+int_array = []
+int_count = 1
 
 class bcolors:
 	HEADER = '\033[95m'
@@ -16,6 +21,66 @@ class bcolors:
 	ENDC = '\033[0m'
 	BOLD = '\033[1m'
 	UNDERLINE = '\033[4m'
+
+def all_interfaces():
+	# Gather a list of all available interfaces
+	max_possible = 128  # arbitrary. raise if needed.
+	bytes = max_possible * 32
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	names = array.array('B', '\0' * bytes)
+	outbytes = struct.unpack('iL', fcntl.ioctl(
+		s.fileno(),
+		0x8912,  # SIOCGIFCONF
+		struct.pack('iL', bytes, names.buffer_info()[0])
+	))[0]
+	namestr = names.tostring()
+	lst = []
+	for i in range(0, outbytes, 40):
+		name = namestr[i:i+16].split('\0', 1)[0]
+		ip   = namestr[i+20:i+24]
+		lst.append((name, ip))
+	return lst
+
+def format_ip(addr):
+	# Format the IP address of each interface
+	return str(ord(addr[0])) + '.' + \
+		str(ord(addr[1])) + '.' + \
+		str(ord(addr[2])) + '.' + \
+		str(ord(addr[3]))
+
+def interface_menu ():
+	# Menu to pick which interface to mess with
+	ifs = all_interfaces ()
+	global iface_count
+	iface_count = 1
+
+        print 5 * "-" , "Nectar Traffic Control Interface Choice " , 5 * "-"
+
+	for i in ifs:
+		int_array.append (i[0])
+		print "{0}. {1}\t\t{2}" .format (iface_count, i[0], format_ip(i[1]))
+		iface_count += 1
+
+        print 60 * "-"
+
+def pick_interface ():
+        loop=True
+	global iface
+
+        while loop:
+                interface_menu ()
+		real_count = iface_count - 1
+                # Test that an integer has been entered
+                try:
+                        choice = int (raw_input("Enter your choice [1-{0}]: " .format (real_count)))
+                except ValueError:
+                        raw_input("Wrong option selection. Entry must be [1-{0}]. Enter any key to try again.." .format (real_count))
+                        pick_interface ()
+		
+		if choice >0 and choice < iface_count:
+			choice -= 1
+			iface = int_array[choice]
+			loop = False
 
 def precheck ():
 	# check if the user is root or sudo
@@ -80,12 +145,13 @@ def top_menu ():
 			raw_input("Wrong option selection. Entry must be [1-5] Enter any key to try again..")
 
 def main ():
-	if len(sys.argv) != 2:
-		print "Usage tcmenu <interface>\n"
-		exit ()
-	else:
-		iface = str(sys.argv[1])
+#	if len(sys.argv) != 2:
+#		print "Usage tcmenu <interface>\n"
+#		exit ()
+#	else:
+#		iface = str(sys.argv[1])
 	precheck ()
+	pick_interface ()
 	top_menu ()
 
 main()
