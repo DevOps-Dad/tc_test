@@ -97,7 +97,8 @@ def top_menu_print ():
 	print "2. Batch Traffic Control impediments"
 	print "3. Display Current impediments"
 	print "4. Clear all impediments"
-	print "5. Exit"
+	print "5. Change interface"
+	print "6. Exit"
 	print 60 * "-"
 
 def top_menu ():  
@@ -108,9 +109,9 @@ def top_menu ():
 
 		# Test that an integer has been entered
 		try:
-			choice = int (raw_input("Enter your choice [1-5]: "))
+			choice = int (raw_input("Enter your choice [1-6]: "))
 		except ValueError:
-			raw_input("Wrong option selection. Entry must be [1-5]. Enter any key to try again..")
+			raw_input("Wrong option selection. Entry must be [1-6]. Enter any key to try again..")
 			top_menu ()
 
 		if choice==1:     
@@ -138,6 +139,8 @@ def top_menu ():
 			except OSError as e:
 				print >> sys.stderr, "Execution failed:", e
 		elif choice==5:
+			pick_interface ()
+		elif choice==6:
 			print "Thank you for using the Nectar Traffic Control setup utility...Have a fantastic day!!"
 			loop=False # This will make the while loop to end as not value of loop is set to False
 		else:
