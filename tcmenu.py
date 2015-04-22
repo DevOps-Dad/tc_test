@@ -146,18 +146,15 @@ def single_menu ():
                         raw_input("Wrong option selection. Entry must be [1-7] Enter any key to try again..")
 
 def rate_limit ():
+	top_limit = 1000
 	try:
 		max_rate = int (raw_input("Please enter the maximum bandwidth allowed in kbps: "))
 	except ValueError:
 		raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
 		rate_limit ()
 
-	print "tc qdisc add dev {0} handle 1: root htb default 11" .format (iface)
-	send_cmd ("tc qdisc add dev " + iface + " handle 1: root htb default 11")
-	print "tc class add dev {0} parent 1: classid 1:1 htb rate {1}kbps" .format (iface, max_rate)
-	send_cmd ("tc class add dev " + iface + " parent 1: classid 1:1 htb rate " + str(max_rate) + "kbps")
-	print "tc class add dev {0} parent 1:1 classid 1:11 htb rate {1}kbps" .format (iface, max_rate)
-	send_cmd ("tc class add dev " + iface + " parent 1:1 classid 1:11 htb rate " + str(max_rate) + "kbps")
+	print "tc qdisc add dev {0} root handle 1:0 tbg rate {1}kbit buffer 1600 limit 3000" .format (iface, max_rate)
+	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_rate) + "kbit buffer 1600 limit 3000")
         raw_input("Press Enter to continue...")
 	
 	
