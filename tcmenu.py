@@ -142,8 +142,6 @@ def get_ploss ():
 
 def rate_limit ():
 	top_limit = 1000
-	global root_rule
-	global handle
 
 	max_band = get_bandwidth ()
 	latency = get_latency ()
@@ -201,9 +199,6 @@ def display_imp ():
 	raw_input("Press Enter to continue...")
 
 def clear_imp ():
-	global root_rule
-	root_rule = 0
-
         try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
                 if retcode < 0:
@@ -255,12 +250,6 @@ def main ():
 #		iface = str(sys.argv[1])
 	precheck ()
 	pick_interface ()
-	root_rule = 0
-
-	global root_rule
-	handle = 1
-	global handle
-
 	top_menu ()
 
 main()
