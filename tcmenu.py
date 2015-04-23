@@ -98,65 +98,66 @@ def precheck ():
 	else:
 		return ()
 
-def single_menu_print ():
-	os.system('clear')
-	print bcolors.HEADER
-	print 15 * "-" , "Nectar TC Single Impediment" , 15 * '-'
-	print bcolors.ENDC
-	print "1. Latency test"
-	print "2. Packet loss test"
-	print "3. Jitter"
-	print "4. Rate limit"
-	print "5. Display current impedement"
-	print "6. Clear all impedements"
-	print "7. Previous menu"
-        print bcolors.HEADER
-        print 60 * "-"
-        print bcolors.ENDC
+def get_bandwidth ():
+	loop = True
 
-def single_menu ():
-	loop=True
+	while loop:
+        	try:
+                	max_rate = int (raw_input("Please enter the maximum bandwidth allowed in kbps: "))
+			return (max_rate)
+        	except ValueError:
+                	raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
 
-        while loop:
-                single_menu_print ()
+def get_latency ():
+	loop = True
 
-                # Test that an integer has been entered
-                try:
-                        choice_single = int (raw_input("Enter your choice [1-7]: "))
-                except ValueError:
-                        raw_input("Wrong option selection. Entry must be [1-7]. Enter any key to try again..")
-                        top_menu ()
+	while loop:
+        	try:
+                	max_rate = int (raw_input("Please enter the amount of latency in ms: "))
+                	return (max_rate)
+        	except ValueError:
+                	raw_input("Please enter a number for the amount of latency.  Press Enter to try again..")
 
-                if choice_single ==1:
-                        single_menu ()
-                elif choice_single ==2:
-                        print "Menu 2 has been selected"
-                elif choice_single ==3:  # Display current impediments
-                        display_imp ()
-                elif choice_single ==4:  
-			rate_limit ()
-                elif choice_single ==5:
-                        display_imp ()
-                elif choice_single ==6:
-			clear_imp ()
-		elif choice_single ==7: # return to top menu
-			top_menu ()
-                else:
-                        # Any integer inputs other than values 1-5 we print an error message
-                        raw_input("Wrong option selection. Entry must be [1-7] Enter any key to try again..")
+def get_latdev ():
+	loop = True
+	
+	while loop:
+        	try:
+                	max_rate = int (raw_input("Please enter the deviation in latency in ms (eg. 40ms would make a range +/- 40ms: "))
+                	return (max_rate)
+        	except ValueError:
+                	raw_input("Please enter a number for the deviation in latency.  Press Enter to try again..")
+
+def get_ploss ():
+	loop = True
+
+	while loop:
+		try:
+                	max_rate = int (raw_input("Please enter the percentage of packet loss: "))
+		
+			if max_rate >= 0 and max_rate <= 100:
+                		return (max_rate)
+			else:
+				raw_input("Please enter a number between 0 and 100.  Press Enter to try again..")
+        	except ValueError:
+                	raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def rate_limit ():
 	top_limit = 1000
-	try:
-		max_rate = int (raw_input("Please enter the maximum bandwidth allowed in kbps: "))
-	except ValueError:
-		raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
-		rate_limit ()
+	global root_rule
+	global handle
 
-	print "tc qdisc add dev {0} root handle 1:0 tbg rate {1}kbit buffer 1600 limit 3000" .format (iface, max_rate)
-	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_rate) + "kbit buffer 1600 limit 3000")
-        raw_input("Press Enter to continue...")
+	max_band = get_bandwidth ()
+	latency = get_latency ()
+	lat_dev = get_latdev ()
+	p_loss = get_ploss ()
 	
+	print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
+	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000")
+	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
+	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%")
+
+        raw_input("Press Enter to continue...")
 	
 def top_menu_print ():
 	# Display the top level menu
@@ -164,8 +165,8 @@ def top_menu_print ():
 	print bcolors.HEADER
 	print 15 * "-" , "Nectar Traffic Control Setup" , 15 * "-"
 	print bcolors.ENDC
-	print "1. Single Traffic Control impediment"
-	print "2. Batch Traffic Control impediments"
+	print "1. Single Traffic Control Test"
+	print "2. Create Batch Traffic Control impediments"
 	print "3. Display Current impediments"
 	print "4. Clear all impediments"
 	print "5. Change interface"
@@ -202,6 +203,9 @@ def display_imp ():
 	raw_input("Press Enter to continue...")
 
 def clear_imp ():
+	global root_rule
+	root_rule = 0
+
         try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
                 if retcode < 0:
@@ -226,7 +230,7 @@ def top_menu ():
 			raw_input("Wrong option selection. Entry must be [1-6]. Enter any key to try again..")
 			top_menu ()
 		if choice==1:     
-			single_menu ()
+			rate_limit ()
 		elif choice==2:
 			print "Menu 2 has been selected"
 		elif choice==3:  # Display current impediments
@@ -253,6 +257,12 @@ def main ():
 #		iface = str(sys.argv[1])
 	precheck ()
 	pick_interface ()
+	root_rule = 0
+
+	global root_rule
+	handle = 1
+	global handle
+
 	top_menu ()
 
 main()
