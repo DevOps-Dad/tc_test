@@ -79,15 +79,13 @@ def pick_interface ():
                 # Test that an integer has been entered
                 try:
                         choice = int (raw_input("Enter your choice [1-{0}]: " .format (real_count)))
+			if choice > 0 and choice < iface_count:
+				choice -= 1
+				iface = int_array[choice]
+				loop = False
                 except ValueError:
                         raw_input("Wrong option selection. Entry must be [1-{0}]. Enter any key to try again.." .format (real_count))
-                        pick_interface ()
 		
-		if choice >0 and choice < iface_count:
-			choice -= 1
-			iface = int_array[choice]
-			loop = False
-
 def precheck ():
 	# check if the user is root or sudo
 	if os.getuid() != 0:
