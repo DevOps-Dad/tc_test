@@ -169,8 +169,7 @@ def batch_mode ():
 	# This is where batch mode shell scripts are created
 	file_loop = True
 	test_loop = True
-	yn = True
-	test_number = 1
+	test_number = 0
 
 	while file_loop:
 		try:
@@ -182,9 +181,10 @@ def batch_mode ():
 			raw_input("Please enter a valid filename.  Press Enter to continue..")
 	
 	f.write('#!/bin/bash\n')
-	f.write('tc qdisc del root dev ' + iface)
 
 	while test_loop:
+		yn = True
+		test_number += 1
 		print "Enter parameters for test {0}" .format (test_number)
 		max_band = get_bandwidth ()
 		latency = get_latency ()
@@ -192,29 +192,43 @@ def batch_mode ():
 		p_loss = get_ploss ()
 		sleep = get_sleep ()
 
+		test_line = "echo \"Running test " + str(test_number) + " for " + str(sleep) + " Minutes...\"\n"
+
+		f.write('tc qdisc del root dev ' + iface + '\n')
+
 		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
 		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
 		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%" + "\n"
-		sleep_line = str (sleep * 60) + "\n"
-
+		print "sleep {0}" .format (str (sleep * 60))
+		sleep_line = "sleep " + str (sleep * 60) + "\n"
+		
+		f.write (test_line)
 		f.write (root_line)
 		f.write (parent_line)
+                f.write ('tc qdisc show dev ' + iface + '\n')
 		f.write (sleep_line)
 
 		while yn:
 			keep_going = str (raw_input("Do you wish to add more tests to the batch (y/n): "))
 			
-			if keep_going = "y" or keep_going = "y":
+			if keep_going == "y" or keep_going == "y":
 				yn = False
-			elif keep_going != "n" or keep_going != "N":
-				raw_input("Please enter Y or N  Press Enter to continue..")
+			elif keep_going == "n" or keep_going == "N":
+                                file_loop = False
+                                test_loop = False
+                                yn = False
 			else:
-				file_loop = False
-				test_loop = False
+                                raw_input("Please enter Y or N  Press Enter to continue..")
 
 	f.write('tc qdisc del root dev ' + iface)
 	f.close()
+
+	print "The following batch file was created.  Please run \'sh <filename> \' as root from the command prompt to execute the tests"
+	with open (filename, 'r') as fin:
+		print fin.read()
+
+	raw_input("Press Enter to continue..")
 
 def top_menu_print ():
 	# Display the top level menu
