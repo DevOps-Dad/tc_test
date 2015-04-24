@@ -224,6 +224,10 @@ def batch_mode ():
 	test_loop = True
 	test_number = 0
 
+	print bcolors.OKGREEN
+	print "\n\n Please answer the following questions in order to set up your batch of impediments:\n"
+	print bcolors.ENDC
+	
 	while file_loop:
 		try:
 			filename = str (raw_input("Please enter the name of the batch file to create: "))
