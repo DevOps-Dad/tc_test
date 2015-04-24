@@ -140,6 +140,48 @@ def get_ploss ():
 		except ValueError:
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
+def get_duplicate ():
+	loop = True
+
+	while loop:
+		try:
+			max_rate = int (raw_input("Please enter the percentage of packets to duplicate: "))
+		
+			if max_rate >= 0 and max_rate <= 100:
+				return (max_rate)
+			else:
+				raw_input("Please enter a number between 0 and 100.  Press Enter to try again..")
+		except ValueError:
+			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
+
+def get_corrupt ():
+	loop = True
+
+	while loop:
+		try:
+			max_rate = int (raw_input("Please enter the percentage of packets to corrupt: "))
+		
+			if max_rate >= 0 and max_rate <= 100:
+				return (max_rate)
+			else:
+				raw_input("Please enter a number between 0 and 100.  Press Enter to try again..")
+		except ValueError:
+			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
+
+def get_reorder ():
+	loop = True
+
+	while loop:
+		try:
+			max_rate = int (raw_input("Please enter the percentage of packets to delay (out of order): "))
+		
+			if max_rate >= 0 and max_rate <= 100:
+				return (max_rate)
+			else:
+				raw_input("Please enter a number between 0 and 100.  Press Enter to try again..")
+		except ValueError:
+			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
+
 def get_sleep ():
 	loop = True
 	
@@ -157,11 +199,14 @@ def rate_limit ():
 	latency = get_latency ()
 	lat_dev = get_latdev ()
 	p_loss = get_ploss ()
+	duplicate = get_duplicate ()
+	corrupt = get_corrupt ()
+	reorder = get_reorder ()
 	
 	print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000")
-	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
-	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%")
+	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
+	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt" + str(corrupt) + "% reorder " + reorder + "% 50%" )
 
 	raw_input("Press Enter to continue...")
 	
@@ -190,6 +235,9 @@ def batch_mode ():
 		latency = get_latency ()
 		lat_dev = get_latdev ()
 		p_loss = get_ploss ()
+		duplicate = get_duplicate ()
+		corrupt = get_corrupt ()
+		reorder = get_reorder ()
 		sleep = get_sleep ()
 
 		test_line = "echo \"Running test " + str(test_number) + " for " + str(sleep) + " Minutes...\"\n"
@@ -198,15 +246,15 @@ def batch_mode ():
 
 		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
-		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
-		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%" + "\n"
+		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
+		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt" + str(corrupt) + "% reorder " + str(reorder) + "% 50% \n"
 		print "sleep {0}" .format (str (sleep * 60))
 		sleep_line = "sleep " + str (sleep * 60) + "\n"
 		
 		f.write (test_line)
 		f.write (root_line)
 		f.write (parent_line)
-                f.write ('tc qdisc show dev ' + iface + '\n')
+		f.write ('tc qdisc show dev ' + iface + '\n')
 		f.write (sleep_line)
 
 		while yn:
@@ -215,11 +263,11 @@ def batch_mode ():
 			if keep_going == "y" or keep_going == "y":
 				yn = False
 			elif keep_going == "n" or keep_going == "N":
-                                file_loop = False
-                                test_loop = False
-                                yn = False
+				file_loop = False
+				test_loop = False
+				yn = False
 			else:
-                                raw_input("Please enter Y or N  Press Enter to continue..")
+				raw_input("Please enter Y or N  Press Enter to continue..")
 
 	f.write('tc qdisc del root dev ' + iface)
 	f.close()
