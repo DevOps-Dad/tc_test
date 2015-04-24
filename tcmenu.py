@@ -227,12 +227,11 @@ def batch_mode ():
 	print bcolors.OKGREEN
 	print "\n\n Please answer the following questions in order to set up your batch of impediments:\n"
 	print bcolors.ENDC
-	
+
 	while file_loop:
 		try:
 			filename = str (raw_input("Please enter the name of the batch file to create: "))
 			f = open (filename, 'w')
-			print f
 			file_loop = False
 		except:
 			raw_input("Please enter a valid filename.  Press Enter to continue..")
@@ -242,7 +241,11 @@ def batch_mode ():
 	while test_loop:
 		yn = True
 		test_number += 1
-		print "Enter parameters for test {0}" .format (test_number)
+
+		print bcolors.WARNING
+		print "\nEnter parameters for test {0}" .format (test_number)
+		print bcolors.ENDC
+		
 		max_band = get_bandwidth ()
 		latency = get_latency ()
 		lat_dev = get_latdev ()
