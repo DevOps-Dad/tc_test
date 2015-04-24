@@ -206,7 +206,7 @@ def rate_limit ():
 	print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000")
 	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
-	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt" + str(corrupt) + "% reorder " + reorder + "% 50%" )
+	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt " + str(corrupt) + "% reorder " + str(reorder) + "% 50%" )
 
 	raw_input("Press Enter to continue...")
 	
@@ -247,7 +247,7 @@ def batch_mode ():
 		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
 		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
-		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt" + str(corrupt) + "% reorder " + str(reorder) + "% 50% \n"
+		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt " + str(corrupt) + "% reorder " + str(reorder) + "% 50% \n"
 		print "sleep {0}" .format (str (sleep * 60))
 		sleep_line = "sleep " + str (sleep * 60) + "\n"
 		
