@@ -56,7 +56,7 @@ def interface_menu ():
 
 	os.system('clear')
 	print bcolors.HEADER
-        print 5 * "-" , "Nectar Traffic Control Interface Choice " , 5 * "-"
+	print 5 * "-" , "Nectar Traffic Control Interface Choice " , 5 * "-"
 	print bcolors.ENDC
 
 	for i in ifs:
@@ -65,26 +65,26 @@ def interface_menu ():
 		iface_count += 1
 
 	print bcolors.HEADER
-        print 52 * "-"
+	print 52 * "-"
 	print bcolors.ENDC
 
 def pick_interface ():
 	# Linux interface selector
-        loop=True
+	loop=True
 	global iface
 
-        while loop:
-                interface_menu ()
+	while loop:
+		interface_menu ()
 		real_count = iface_count - 1
-                # Test that an integer has been entered
-                try:
-                        choice = int (raw_input("Enter your choice [1-{0}]: " .format (real_count)))
+		# Test that an integer has been entered
+		try:
+			choice = int (raw_input("Enter your choice [1-{0}]: " .format (real_count)))
 			if choice > 0 and choice < iface_count:
 				choice -= 1
 				iface = int_array[choice]
 				loop = False
-                except ValueError:
-                        raw_input("Wrong option selection. Entry must be [1-{0}]. Enter any key to try again.." .format (real_count))
+		except ValueError:
+			raw_input("Wrong option selection. Entry must be [1-{0}]. Enter any key to try again.." .format (real_count))
 		
 def precheck ():
 	# check if the user is root or sudo
@@ -100,45 +100,45 @@ def get_bandwidth ():
 	loop = True
 
 	while loop:
-        	try:
-                	max_rate = int (raw_input("Please enter the maximum bandwidth allowed in kbps: "))
+		try:
+			max_rate = int (raw_input("Please enter the maximum bandwidth allowed in kbps: "))
 			return (max_rate)
-        	except ValueError:
-                	raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
+		except ValueError:
+			raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
 
 def get_latency ():
 	loop = True
 
 	while loop:
-        	try:
-                	max_rate = int (raw_input("Please enter the amount of latency in ms: "))
-                	return (max_rate)
-        	except ValueError:
-                	raw_input("Please enter a number for the amount of latency.  Press Enter to try again..")
+		try:
+			max_rate = int (raw_input("Please enter the amount of latency in ms: "))
+			return (max_rate)
+		except ValueError:
+			raw_input("Please enter a number for the amount of latency.  Press Enter to try again..")
 
 def get_latdev ():
 	loop = True
 	
 	while loop:
-        	try:
-                	max_rate = int (raw_input("Please enter the deviation in latency in ms (eg. 40ms would make a range +/- 40ms: "))
-                	return (max_rate)
-        	except ValueError:
-                	raw_input("Please enter a number for the deviation in latency.  Press Enter to try again..")
+		try:
+			max_rate = int (raw_input("Please enter the deviation in latency in ms (eg. 40ms would make a range +/- 40ms: "))
+			return (max_rate)
+		except ValueError:
+			raw_input("Please enter a number for the deviation in latency.  Press Enter to try again..")
 
 def get_ploss ():
 	loop = True
 
 	while loop:
 		try:
-                	max_rate = int (raw_input("Please enter the percentage of packet loss: "))
+			max_rate = int (raw_input("Please enter the percentage of packet loss: "))
 		
 			if max_rate >= 0 and max_rate <= 100:
-                		return (max_rate)
+				return (max_rate)
 			else:
 				raw_input("Please enter a number between 0 and 100.  Press Enter to try again..")
-        	except ValueError:
-                	raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
+		except ValueError:
+			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def rate_limit ():
 	top_limit = 1000
@@ -153,7 +153,7 @@ def rate_limit ():
 	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
 	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%")
 
-        raw_input("Press Enter to continue...")
+	raw_input("Press Enter to continue...")
 	
 def top_menu_print ():
 	# Display the top level menu
@@ -173,52 +173,53 @@ def top_menu_print ():
 
 def send_cmd (line):
 	try:
-                retcode = subprocess.call(line, shell=True)
-                if retcode < 0:
-                        print >> sys.stderr, "Child was terminated by signal", -retcode
-                else:
-                        print bcolors.OKGREEN
-                        print >> sys.stderr,"Child returned", retcode
-                        print bcolors.ENDC
-        except OSError as e:
-                        print >> sys.stderr, "Execution failed:", e
+		retcode = subprocess.call(line, shell=True)
+		if retcode < 0:
+			print >> sys.stderr, "Child was terminated by signal", -retcode
+		else:
+			print bcolors.OKGREEN
+			print >> sys.stderr,"Child returned", retcode
+			print bcolors.ENDC
+	except OSError as e:
+		print >> sys.stderr, "Execution failed:", e
+
 def display_imp ():
-        try:
+	try:
 		retcode = subprocess.call("tc qdisc show dev " + iface, shell=True)
 		if retcode < 0:
 			print >> sys.stderr, "Child was terminated by signal", -retcode
-                else:
-                        print bcolors.OKGREEN
-                        print >> sys.stderr,"Child returned", retcode
-                        print bcolors.ENDC
+		else:
+			print bcolors.OKGREEN
+			print >> sys.stderr,"Child returned", retcode
+			print bcolors.ENDC
 	except OSError as e:
-                        print >> sys.stderr, "Execution failed:", e
+		print >> sys.stderr, "Execution failed:", e
 
 	send_cmd ("tc class show dev " + iface)
 	
 	raw_input("Press Enter to continue...")
 
 def clear_imp ():
-        try:
+	try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
-                if retcode < 0:
+		if retcode < 0:
 			print >> sys.stderr, "Child was terminated by signal", -retcode
-                else:
-                        print >> sys.stderr, "Child returned", retcode
-        except OSError as e:
-                        print >> sys.stderr, "Execution failed:", e
+		else:
+			print >> sys.stderr, "Child returned", retcode
+	except OSError as e:
+		print >> sys.stderr, "Execution failed:", e
 	
 	raw_input("Press Enter to continue...")
 
 def clear_imp_silent ():
-        try:
-                retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
-                if retcode < 0:
-                        print >> sys.stderr, "Child was terminated by signal", -retcode
+	try:
+		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
+		if retcode < 0:
+			print >> sys.stderr, "Child was terminated by signal", -retcode
 			raw_input("Impediment clearing failed...Press Enter to continue...")
-        except OSError as e:
-                        print >> sys.stderr, "Execution failed:", e
-			raw_input("Impediment clearing failed...Press Enter to continue...")
+	except OSError as e:
+		print >> sys.stderr, "Execution failed:", e
+		raw_input("Impediment clearing failed...Press Enter to continue...")
 
 def top_menu ():  
 	loop=True
