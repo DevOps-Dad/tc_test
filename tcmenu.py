@@ -168,7 +168,7 @@ def batch_mode ():
 		except:
 			raw_input("Please enter a valid filename.  Press Enter to continue..")
 	f.close()
-	
+
 def top_menu_print ():
 	# Display the top level menu
 	os.system('clear')
@@ -250,7 +250,7 @@ def top_menu ():
 		if choice==1:     
 			rate_limit ()
 		elif choice==2:
-			print "Menu 2 has been selected"
+			batch_mode ()
 		elif choice==3:  # Display current impediments
 			display_imp ()
 		elif choice==4:  # Clear all impediments
