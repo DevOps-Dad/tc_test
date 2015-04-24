@@ -140,6 +140,16 @@ def get_ploss ():
 		except ValueError:
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
+def get_sleep ():
+	loop = True
+	
+	while loop:
+		try:
+			max_rate = int (raw_input("Please enter how many minutes to run before moving on to the next test (minutes): "))
+			return (max_rate)
+		except ValueError:
+			raw_input("Please enter the number of minutes.  Press Enter to try again..")
+
 def rate_limit ():
 	top_limit = 1000
 
@@ -158,6 +168,9 @@ def rate_limit ():
 def batch_mode ():
 	# This is where batch mode shell scripts are created
 	file_loop = True
+	test_loop = True
+	yn = True
+	test_number = 1
 
 	while file_loop:
 		try:
@@ -167,6 +180,40 @@ def batch_mode ():
 			file_loop = False
 		except:
 			raw_input("Please enter a valid filename.  Press Enter to continue..")
+	
+	f.write('#!/bin/bash\n')
+	f.write('tc qdisc del root dev ' + iface)
+
+	while test_loop:
+		print "Enter parameters for test {0}" .format (test_number)
+		max_band = get_bandwidth ()
+		latency = get_latency ()
+		lat_dev = get_latdev ()
+		p_loss = get_ploss ()
+		sleep = get_sleep ()
+
+		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
+		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
+		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25%" .format (iface, str(latency), str(lat_dev), p_loss)
+		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "%" + "\n"
+		sleep_line = str (sleep * 60) + "\n"
+
+		f.write (root_line)
+		f.write (parent_line)
+		f.write (sleep_line)
+
+		while yn:
+			keep_going = str (raw_input("Do you wish to add more tests to the batch (y/n): "))
+			
+			if keep_going = "y" or keep_going = "y":
+				yn = False
+			elif keep_going != "n" or keep_going != "N":
+				raw_input("Please enter Y or N  Press Enter to continue..")
+			else:
+				file_loop = False
+				test_loop = False
+
+	f.write('tc qdisc del root dev ' + iface)
 	f.close()
 
 def top_menu_print ():
