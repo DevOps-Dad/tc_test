@@ -211,10 +211,12 @@ def rate_limit ():
 	print "\n\nBelow are the tc commands that are being submitted\n"
 	print bcolors.ENDC	
 
+	print bcolors.WARNING
 	print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000")
 	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
 	send_cmd ("tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt " + str(corrupt) + "% reorder " + str(reorder) + "% 50%" )
+	print bcolors.ENDC
 
 	raw_input("Press Enter to continue...")
 	
@@ -245,7 +247,7 @@ def batch_mode ():
 		print bcolors.WARNING
 		print "\nEnter parameters for test {0}" .format (test_number)
 		print bcolors.ENDC
-		
+
 		max_band = get_bandwidth ()
 		latency = get_latency ()
 		lat_dev = get_latdev ()
@@ -263,13 +265,15 @@ def batch_mode ():
 		print "\n\nBelow are the tc commands that are being submitted to batch file {0}\n" .format (filename)
 		print bcolors.ENDC	
 
+		print bcolors.WARNING
 		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
 		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
 		parent_line = "tc qdisc add dev " + iface + " parent 1:0 handle 10: netem delay " + str(latency) + "ms " + str(lat_dev) + "ms 25% loss " + str(p_loss) + "% 25% duplicate " + str(duplicate) + "% corrupt " + str(corrupt) + "% reorder " + str(reorder) + "% 50% \n"
 		print "sleep {0}" .format (str (sleep * 60))
 		sleep_line = "sleep " + str (sleep * 60) + "\n"
-		
+		print bcolors.ENDC
+
 		f.write (test_line)
 		f.write (root_line)
 		f.write (parent_line)
@@ -277,7 +281,7 @@ def batch_mode ():
 		f.write (sleep_line)
 
 		while yn:
-			keep_going = str (raw_input("Do you wish to add more tests to the batch (y/n): "))
+			keep_going = str (raw_input("\nDo you wish to add more tests to the batch (y/n): "))
 			
 			if keep_going == "y" or keep_going == "y":
 				yn = False
@@ -293,6 +297,9 @@ def batch_mode ():
 
 	print bcolors.OKGREEN
 	print "\n\nThe following batch file was created.  Please run \'sh <filename> \' as root from the command prompt to execute the tests"
+	print bcolors.ENDC
+
+	print bcolors.WARNING
 	with open (filename, 'r') as fin:
 		print fin.read()
 	print bcolors.ENDC
