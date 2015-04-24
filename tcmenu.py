@@ -210,6 +210,16 @@ def clear_imp ():
 	
 	raw_input("Press Enter to continue...")
 
+def clear_imp_silent ():
+        try:
+                retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
+                if retcode < 0:
+                        print >> sys.stderr, "Child was terminated by signal", -retcode
+			raw_input("Impediment clearing failed...Press Enter to continue...")
+        except OSError as e:
+                        print >> sys.stderr, "Execution failed:", e
+			raw_input("Impediment clearing failed...Press Enter to continue...")
+
 def top_menu ():  
 	loop=True
   
@@ -236,6 +246,7 @@ def top_menu ():
 			print bcolors.OKGREEN
 			print "Thank you for using the Nectar Traffic Control setup utility...Have a fantastic day!!"
 			print bcolors.ENDC
+			clear_imp_silent ()
 			loop=False # This will make the while loop to end as not value of loop is set to False
 			exit ()
 		else:
@@ -250,6 +261,7 @@ def main ():
 #		iface = str(sys.argv[1])
 	precheck ()
 	pick_interface ()
+	clear_imp_silent ()
 	top_menu ()
 
 main()
