@@ -155,6 +155,20 @@ def rate_limit ():
 
 	raw_input("Press Enter to continue...")
 	
+def batch_mode ():
+	# This is where batch mode shell scripts are created
+	file_loop = True
+
+	while file_loop:
+		try:
+			filename = str (raw_input("Please enter the name of the batch file to create: "))
+			f = open (filename, 'w')
+			print f
+			file_loop = False
+		except:
+			raw_input("Please enter a valid filename.  Press Enter to continue..")
+	f.close()
+	
 def top_menu_print ():
 	# Display the top level menu
 	os.system('clear')
@@ -255,11 +269,6 @@ def top_menu ():
 			raw_input("Wrong option selection. Entry must be [1-7] Enter any key to try again..")
 
 def main ():
-#	if len(sys.argv) != 2:
-#		print "Usage tcmenu <interface>\n"
-#		exit ()
-#	else:
-#		iface = str(sys.argv[1])
 	precheck ()
 	pick_interface ()
 	clear_imp_silent ()
