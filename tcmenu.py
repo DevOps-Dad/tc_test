@@ -195,6 +195,8 @@ def get_sleep ():
 def rate_limit ():
 	top_limit = 1000
 
+	clear_imp_silent ()
+	
 	print bcolors.OKGREEN
 	print "\n\n Please answer the following questions in order to set up your impediment:\n"
 	print bcolors.ENDC
