@@ -195,6 +195,10 @@ def get_sleep ():
 def rate_limit ():
 	top_limit = 1000
 
+	print bcolors.OKGREEN
+	print "\n\n Please answer the following questions in order to set up your impediment:\n"
+	print bcolors.ENDC
+
 	max_band = get_bandwidth ()
 	latency = get_latency ()
 	lat_dev = get_latdev ()
@@ -202,7 +206,11 @@ def rate_limit ():
 	duplicate = get_duplicate ()
 	corrupt = get_corrupt ()
 	reorder = get_reorder ()
-	
+
+	print bcolors.OKGREEN
+	print "\n\nBelow are the tc commands that are being submitted\n"
+	print bcolors.ENDC	
+
 	print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 	send_cmd ("tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000")
 	print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
@@ -244,6 +252,10 @@ def batch_mode ():
 
 		f.write('tc qdisc del root dev ' + iface + '\n')
 
+		print bcolors.OKGREEN
+		print "\n\nBelow are the tc commands that are being submitted to batch file {0}\n" .format (filename)
+		print bcolors.ENDC	
+
 		print "tc qdisc add dev {0} root handle 1:0 tbf rate {1} kbit buffer 1600 limit 3000" .format (iface, str(max_band))
 		root_line =  "tc qdisc add dev " + iface + " root handle 1:0 tbf rate " + str(max_band) + "kbit buffer 1600 limit 3000" + "\n"
 		print "tc qdisc add dev {0} parent 1:0 handle 10: netem delay {1}ms {2}ms 25% loss {3}% 25% duplicate {4}% corrupt {5}% reorder {6}% 50%" .format (iface, str(latency), str(lat_dev), str(p_loss), str(duplicate), str(corrupt), str(reorder))
@@ -272,9 +284,11 @@ def batch_mode ():
 	f.write('tc qdisc del root dev ' + iface)
 	f.close()
 
-	print "The following batch file was created.  Please run \'sh <filename> \' as root from the command prompt to execute the tests"
+	print bcolors.OKGREEN
+	print "\n\nThe following batch file was created.  Please run \'sh <filename> \' as root from the command prompt to execute the tests"
 	with open (filename, 'r') as fin:
 		print fin.read()
+	print bcolors.ENDC
 
 	raw_input("Press Enter to continue..")
 
@@ -298,25 +312,33 @@ def send_cmd (line):
 	try:
 		retcode = subprocess.call(line, shell=True)
 		if retcode < 0:
+			print bcolors.FAIL
 			print >> sys.stderr, "Child was terminated by signal", -retcode
+			print bcolors.ENDC
 		else:
 			print bcolors.OKGREEN
-			print >> sys.stderr,"Child returned", retcode
+			print >> sys.stderr,"Success Code", retcode
 			print bcolors.ENDC
 	except OSError as e:
+		print bcolors.FAIL
 		print >> sys.stderr, "Execution failed:", e
+		print bcolors.ENDC
 
 def display_imp ():
 	try:
 		retcode = subprocess.call("tc qdisc show dev " + iface, shell=True)
 		if retcode < 0:
+			print bcolors.FAIL
 			print >> sys.stderr, "Child was terminated by signal", -retcode
+			print bcolors.ENDC
 		else:
 			print bcolors.OKGREEN
-			print >> sys.stderr,"Child returned", retcode
+			print >> sys.stderr,"Success Code", retcode
 			print bcolors.ENDC
 	except OSError as e:
+		print bcolors.FAIL
 		print >> sys.stderr, "Execution failed:", e
+		print bcolors.ENDC
 
 	send_cmd ("tc class show dev " + iface)
 	
@@ -326,11 +348,17 @@ def clear_imp ():
 	try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
 		if retcode < 0:
+			print bcolors.FAIL
 			print >> sys.stderr, "Child was terminated by signal", -retcode
+			print bcolors.ENDC
 		else:
-			print >> sys.stderr, "Child returned", retcode
+			print bcolors.OKGREEN
+			print >> sys.stderr,"Success Code", retcode
+			print bcolors.ENDC
 	except OSError as e:
+		print bcolors.FAIL
 		print >> sys.stderr, "Execution failed:", e
+		print bcolors.ENDC
 	
 	raw_input("Press Enter to continue...")
 
