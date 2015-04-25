@@ -13,6 +13,7 @@ int_array = []
 int_count = 1
 
 class bcolors:
+	# Colors to be used to display text
 	HEADER = '\033[95m'
 	OKBLUE = '\033[94m'
 	OKGREEN = '\033[92m'
@@ -97,6 +98,7 @@ def precheck ():
 		return ()
 
 def get_bandwidth ():
+	# Query the user for bandwidth limits
 	loop = True
 
 	while loop:
@@ -107,6 +109,7 @@ def get_bandwidth ():
 			raw_input("Please enter a number for the maximum bandwidth.  Press Enter to try again..")
 
 def get_latency ():
+	# Query the user for latency
 	loop = True
 
 	while loop:
@@ -117,6 +120,7 @@ def get_latency ():
 			raw_input("Please enter a number for the amount of latency.  Press Enter to try again..")
 
 def get_latdev ():
+	# Query the + or - deviation of the latency
 	loop = True
 	
 	while loop:
@@ -127,6 +131,7 @@ def get_latdev ():
 			raw_input("Please enter a number for the deviation in latency.  Press Enter to try again..")
 
 def get_ploss ():
+	# Query the percentage of packet loss
 	loop = True
 
 	while loop:
@@ -141,6 +146,7 @@ def get_ploss ():
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def get_duplicate ():
+	# Query the percentage of duplicates
 	loop = True
 
 	while loop:
@@ -155,6 +161,7 @@ def get_duplicate ():
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def get_corrupt ():
+	# Query corrupt packet percentage
 	loop = True
 
 	while loop:
@@ -169,6 +176,7 @@ def get_corrupt ():
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def get_reorder ():
+	#Query re-order percentage
 	loop = True
 
 	while loop:
@@ -183,6 +191,7 @@ def get_reorder ():
 			raw_input("Please enter a number for the percentage of packet loss.  Press Enter to try again..")
 
 def get_sleep ():
+	# Query how long the impediment should run
 	loop = True
 	
 	while loop:
@@ -193,6 +202,7 @@ def get_sleep ():
 			raw_input("Please enter the number of minutes.  Press Enter to try again..")
 
 def rate_limit ():
+	# Single test setup
 	top_limit = 1000
 
 	clear_imp_silent ()
@@ -231,7 +241,8 @@ def batch_mode ():
 	print bcolors.OKGREEN
 	print "\n\n Please answer the following questions in order to set up your batch of impediments:\n"
 	print bcolors.ENDC
-
+	
+	# Open the file, error if invalid
 	while file_loop:
 		try:
 			filename = str (raw_input("Please enter the name of the batch file to create: "))
@@ -242,6 +253,7 @@ def batch_mode ():
 	
 	f.write('#!/bin/bash\n')
 
+	# Loop and create tests until user says to stop
 	while test_loop:
 		yn = True
 		test_number += 1
@@ -325,6 +337,7 @@ def top_menu_print ():
 	print bcolors.ENDC
 
 def send_cmd (line):
+	# Send command engine
 	try:
 		retcode = subprocess.call(line, shell=True)
 		if retcode < 0:
@@ -341,6 +354,7 @@ def send_cmd (line):
 		print bcolors.ENDC
 
 def display_imp ():
+	# Display impediments
 	try:
 		retcode = subprocess.call("tc qdisc show dev " + iface, shell=True)
 		if retcode < 0:
@@ -361,6 +375,7 @@ def display_imp ():
 	raw_input("Press Enter to continue...")
 
 def clear_imp ():
+	# Clear impediments
 	try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
 		if retcode < 0:
@@ -379,6 +394,7 @@ def clear_imp ():
 	raw_input("Press Enter to continue...")
 
 def clear_imp_silent ():
+	# Clear impediments with no feedback except for critical fault
 	try:
 		retcode = subprocess.call("tc qdisc del root dev " + iface, shell=True)
 		if retcode < 0:
