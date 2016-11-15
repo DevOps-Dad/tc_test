@@ -32,7 +32,7 @@ II. Interface Choice
 
 # ![](media/image1.png width="5.861111111111111in"
 # height="2.0277777777777777in")
-<img src="media/image1.png" width="6in" height="2in">
+<img src="media/image1.png" width="6in" height="2in"/>
 
 1.  When the script is executed the user will be prompted to select the
     interface that will be used for testing. This can be changed later
