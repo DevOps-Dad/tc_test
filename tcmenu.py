@@ -72,7 +72,7 @@ def interface_menu ():
 
 	os.system('clear')
 	print bcolors.HEADER
-	print 5 * "-" , "Nectar Traffic Control Interface Choice " , 5 * "-"
+	print 5 * "-" , "Traffic Control Interface Choice " , 5 * "-"
 	print bcolors.ENDC
 
 	for i in ifs:
@@ -339,7 +339,7 @@ def top_menu_print ():
 	# Display the top level menu
 	os.system('clear')
 	print bcolors.HEADER
-	print 15 * "-" , "Nectar Traffic Control Setup" , 15 * "-"
+	print 15 * "-" , "Traffic Control Setup" , 15 * "-"
 	print bcolors.ENDC
 	print "1. Single Traffic Control Test"
 	print "2. Create Batch Traffic Control impediments"
@@ -443,7 +443,7 @@ def top_menu ():
 			pick_interface ()
 		elif choice==6:
 			print bcolors.OKGREEN
-			print "Thank you for using the Nectar Traffic Control setup utility...Have a fantastic day!!"
+			print "Thank you for using the Traffic Control setup utility...Have a fantastic day!!"
 			print bcolors.ENDC
 			clear_imp_silent ()
 			loop=False # This will make the while loop to end as not value of loop is set to False
