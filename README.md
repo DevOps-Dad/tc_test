@@ -1,5 +1,5 @@
 # tc_test
-**Nectar Traffic Control (tc) Control Script for Microsoft**
+**Traffic Control (tc) Control Script**
 
 I. Requirements
 ===============
@@ -30,8 +30,8 @@ I. Requirements
 II. Interface Choice
 ====================
 
-![](media/image1.png){width="5.861111111111111in"
-height="2.0277777777777777in"}
+![](media/image1.png){width="5.861111111111111in" height="2.0277777777777777in")}
+
 
 1.  When the script is executed the user will be prompted to select the
     interface that will be used for testing. This can be changed later
