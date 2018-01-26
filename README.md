@@ -1,5 +1,5 @@
 # tc_test
-**Nectar Traffic Control (tc) Control Script for Microsoft**
+**Traffic Control (tc) Control Script**
 
 I. Requirements
 ===============
